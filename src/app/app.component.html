@@ -1,4 +1,4 @@
-<h1>
+
   
-  <canvas id="draggable" width="1500" height="1000"></canvas>
-</h1>
+<canvas *ngFor="let canvas of curr_canvas_set.canvases;let i=index" class="canvas" id="canvas{{i}}" width="{{canvas.width}}" height="{{canvas.height}}"></canvas>
+
