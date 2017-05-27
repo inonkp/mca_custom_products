@@ -59,10 +59,12 @@ export class AppComponent {
 		//let totalWidth = 0;
 		let img_width = this.img.width*this.scale;
 		let img_height = this.img.height*this.scale;
+		let drag = AppComponent.draggingFactor*this.scale;
+		
 		for(var i = 0 ; i<this.curr_canvas_set.canvases.length ; i++){
 			let canvas = this.curr_canvas_set.canvases[i];		
 			this.contexts[i].clearRect(0,0,canvas.width,canvas.height);	
-			this.contexts[i].drawImage(this.img, img_width/4*i - this.imgX*AppComponent.draggingFactor, 0, (img_width)/4, img_height,     // source rectangle
+			this.contexts[i].drawImage(this.img, img_width/4*i - this.imgX*drag, 0, (img_width)/4, img_height,     // source rectangle
                    0, this.imgY, canvas.width, canvas.height);
 		}
 		
@@ -72,6 +74,7 @@ export class AppComponent {
   		this.imgX = 0;
 		this.imgY = 0;
 		this.updateCanvases();
+		
    }
    
    initMouseEvents(){
@@ -112,9 +115,9 @@ export class AppComponent {
 		e.preventDefault();
 		
 		if(e.deltaY>0){
-		 this.scale *=1.01;
+		 this.scale += .01;
 		}else{
-		 this.scale *= .99;
+		 this.scale -= .01;
 		}
 
 		this.updateCanvases();
