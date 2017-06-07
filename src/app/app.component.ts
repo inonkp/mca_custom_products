@@ -45,6 +45,8 @@ export class AppComponent {
 	imgX;
 	imgY;
 	scale;
+	imgWidthOnCanvas;
+	imgHeightOnCanvas;
 
 
 
@@ -61,11 +63,17 @@ export class AppComponent {
 		let img_height = this.img.height*this.scale;
 		let drag = AppComponent.draggingFactor*this.scale;
 		
+		//this.imgHeightOnCanvas = Math.max(canvas.height,this.img.height);
+		this.imgWidthOnCanvas =  this.img.width/(this.scale);
+
+		console.log(this.imgY);
+		
 		for(var i = 0 ; i<this.curr_canvas_set.canvases.length ; i++){
-			let canvas = this.curr_canvas_set.canvases[i];		
+			let canvas = this.curr_canvas_set.canvases[i];	
+			this.imgHeightOnCanvas = Math.max(canvas.height,this.img.height);			
 			this.contexts[i].clearRect(0,0,canvas.width,canvas.height);	
-			this.contexts[i].drawImage(this.img, img_width/4*i - this.imgX*drag, 0, (img_width)/4, img_height,     // source rectangle
-                   0, this.imgY, canvas.width, canvas.height);
+			this.contexts[i].drawImage(this.img, canvas.width*this.scale*i - this.imgX*drag,0 , canvas.width*this.scale, this.imgHeightOnCanvas,     // source rectangle
+                   0, this.imgY, canvas.width, this.imgHeightOnCanvas/this.scale);
 		}
 		
 	}
@@ -73,7 +81,9 @@ export class AppComponent {
   imageReady() {
   		this.imgX = 0;
 		this.imgY = 0;
+		
 		this.updateCanvases();
+
 		
    }
    
@@ -149,7 +159,12 @@ export class AppComponent {
 		this.curr_canvas_set = CanvasDB.get_canvas_set(0);
 		//console.log(this.curr_canvas_set);
 		
-		this.img.src = "https://cdn.shopify.com/s/files/1/0072/7502/products/2016-4-12_2.jpg?v=1493764875";
+		//this.img.src = "https://cdn.shopify.com/s/files/1/0072/7502/products/2016-4-12_2.jpg?v=1493764875"; // 1000 x 1000
+		//this.img.src = "https://www.noao.edu/image_gallery/images/d2/NGC1365-500.jpg"; //500 * 5000
+		//this.img.src = "http://www.crimsy.com/images/100x100.PNG"; //100 * 100
+		//this.img.src = "http://www.shximai.com/data/out/96/68284658-high-resolution-wallpapers.jpg"; //100 * 100
+		//this.img.src = "https://upload.wikimedia.org/wikipedia/commons/f/f3/Mono_Crater_closeup-1000px.jpeg"; // 500 x 1000
+		this.img.src = "http://photos.toofab.com/gallery-images/2016/04/GettyImages-518772280_master_src.jpg"; // 500 x 1000
 		this.img.onload = (() => this.imageReady());
 		
   }
