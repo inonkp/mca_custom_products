@@ -1,4 +1,4 @@
-import { Component, Directive, EventEmitter, HostListener } from '@angular/core';
+import { ChangeDetectorRef ,ViewEncapsulation,Component, Directive, EventEmitter, HostListener } from '@angular/core';
 import {ElementRef} from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
@@ -13,7 +13,11 @@ import {CanvasSet} from './canvas_db';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
+  encapsulation: ViewEncapsulation.None,
   styles: [`
+	  body, html {
+	  height: 100%;
+	}
     .canvas{
       -webkit-transform: translate3d(0, 0, 0);
       -moz-transform: translate3d(0, 0, 0);
@@ -24,11 +28,17 @@ import {CanvasSet} from './canvas_db';
       background-position: center;
       background-size: contain;
 	  //position: absolute;
-	  margin: 7px;
+	  //margin-right: 7px;
+	  //margin-left: 7px;
       color: #000000;
 
 
     }
+	.canvases_container{
+		border: 1px solid black;
+		display: inline-block;
+		
+	}
   `]
 })
 export class AppComponent {
@@ -45,12 +55,10 @@ export class AppComponent {
 	imgX;
 	imgY;
 	scale;
-	imgWidthOnCanvas;
-	imgHeightOnCanvas;
 
 
 
-	constructor(public element: ElementRef) {
+	constructor(public element: ElementRef,private cdr: ChangeDetectorRef) {
 		this.canvases = [];
 		this.contexts = [];
 		this.scale = 1;
@@ -59,21 +67,24 @@ export class AppComponent {
   
 	updateCanvases(){
 		//let totalWidth = 0;
-		let img_width = this.img.width*this.scale;
-		let img_height = this.img.height*this.scale;
+		//let img_width = this.img.width*this.scale;
+		//let img_height = this.img.height*this.scale;
 		let drag = AppComponent.draggingFactor*this.scale;
 		
 		//this.imgHeightOnCanvas = Math.max(canvas.height,this.img.height);
-		this.imgWidthOnCanvas =  this.img.width/(this.scale);
+		//let imgWidthOnCanvas =  this.img.width/(this.scale);
 
-		console.log(this.imgY);
+		
 		
 		for(var i = 0 ; i<this.curr_canvas_set.canvases.length ; i++){
 			let canvas = this.curr_canvas_set.canvases[i];	
-			this.imgHeightOnCanvas = Math.max(canvas.height,this.img.height);			
-			this.contexts[i].clearRect(0,0,canvas.width,canvas.height);	
-			this.contexts[i].drawImage(this.img, canvas.width*this.scale*i - this.imgX*drag,0 , canvas.width*this.scale, this.imgHeightOnCanvas,     // source rectangle
-                   0, this.imgY, canvas.width, this.imgHeightOnCanvas/this.scale);
+			let width = this.curr_canvas_set.canvases[i].real_time_width;
+
+			let height = this.curr_canvas_set.canvases[i].real_time_height;
+			let imgHeightOnCanvas = Math.max(height,this.img.height);			
+			this.contexts[i].clearRect(0,0,width,height);	
+			this.contexts[i].drawImage(this.img, width*this.scale*i - this.imgX*drag,0 , width*this.scale, imgHeightOnCanvas,     // source rectangle
+                   0, this.imgY, width, imgHeightOnCanvas/this.scale);
 		}
 		
 	}
@@ -135,22 +146,38 @@ export class AppComponent {
    }
    
    ngAfterViewInit(){
-		this.initContexts();
-
+		this.initElements();
 		this.initMouseEvents();
+		Observable.fromEvent(window, 'resize')
+        .subscribe(_ => {
+         let container = <HTMLElement>document.getElementById("my_canvases_container");
+		
+			for (let i =0; i<this.curr_canvas_set.canvases.length;i++){
+				
+
+				this.curr_canvas_set.canvases[i].real_time_width = this.curr_canvas_set.canvases[i].width*container.clientWidth;
+				this.curr_canvas_set.canvases[i].real_time_height = this.curr_canvas_set.canvases[i].height*container.clientHeight;
+			}
+			this.updateCanvases();
+        })
    }
 	
-	initContexts(){
+	initElements(){
 		this.contexts = [];
+		this.canvases = [];
+		let container = <HTMLElement>document.getElementById("my_canvases_container");
 		
 		for (let i =0; i<this.curr_canvas_set.canvases.length;i++){
 			
 			let canvas = <HTMLCanvasElement>document.getElementById("canvas"+i);
+			this.canvases.push(canvas);
+			this.curr_canvas_set.canvases[i].real_time_width = this.curr_canvas_set.canvases[i].width*container.clientWidth;
+			this.curr_canvas_set.canvases[i].real_time_height = this.curr_canvas_set.canvases[i].height*container.clientHeight;
 			this.contexts.push(canvas.getContext("2d"));
 			//this.draggable.style.position = 'relative';
 			canvas.style.cursor = 'pointer';
 		}
-;
+		this.cdr.detectChanges();
 	}
   ngOnInit() {
 
@@ -163,8 +190,8 @@ export class AppComponent {
 		//this.img.src = "https://www.noao.edu/image_gallery/images/d2/NGC1365-500.jpg"; //500 * 5000
 		//this.img.src = "http://www.crimsy.com/images/100x100.PNG"; //100 * 100
 		//this.img.src = "http://www.shximai.com/data/out/96/68284658-high-resolution-wallpapers.jpg"; //100 * 100
-		//this.img.src = "https://upload.wikimedia.org/wikipedia/commons/f/f3/Mono_Crater_closeup-1000px.jpeg"; // 500 x 1000
-		this.img.src = "http://photos.toofab.com/gallery-images/2016/04/GettyImages-518772280_master_src.jpg"; // 500 x 1000
+		this.img.src = "https://upload.wikimedia.org/wikipedia/commons/f/f3/Mono_Crater_closeup-1000px.jpeg"; // 500 x 1000
+		//this.img.src = "http://photos.toofab.com/gallery-images/2016/04/GettyImages-518772280_master_src.jpg"; // 500 x 1000
 		this.img.onload = (() => this.imageReady());
 		
   }

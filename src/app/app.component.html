@@ -1,4 +1,5 @@
 
-  
-<canvas *ngFor="let canvas of curr_canvas_set.canvases;let i=index" class="canvas" id="canvas{{i}}" width="{{canvas.width}}" height="{{canvas.height}}"></canvas>
-
+<div class="canvases_container" id="my_canvases_container" style="height: 80%; width:80%">
+	<canvas *ngFor="let canvas of curr_canvas_set.canvases;let i=index" class="canvas" id="canvas{{i}}" [width]="canvas.real_time_width" [height]="canvas.real_time_height" 
+		[style.margin-top]="canvas.margin_top" [style.margin-bottom]="canvas.margin_bottom" [style.margin-left]="canvas.margin_left" [style.margin-right]="canvas.margin_right"></canvas>
+</div>

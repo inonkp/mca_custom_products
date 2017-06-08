@@ -16,22 +16,30 @@ export class CanvasDB{
 		CanvasDB.canvas_options = [];
 		CanvasDB.canvas_options.push({
 		canvases : [
-			new Canvas({width : 250,
-				height : 700,
-				margin_bottom : 0,
-				margin_top : 0}),
-			new Canvas({width : 250,
-				height : 700,
-				margin_bottom : 0,
-				margin_top : 0}),
-			new Canvas({width : 250,
-				height : 700,
-				margin_bottom : 0,
-				margin_top : 0}),
-			new Canvas({width : 250,
-				height : 700,
-				margin_bottom : 0,
-				margin_top : 0})
+			new Canvas({width : .23,
+				height : 1,
+				margin_left: '1%',
+				margin_right: '1%',
+				margin_bottom : '0%',
+				margin_top : '0%'}),
+			new Canvas({width : .23,
+				height : 1,
+				margin_left: '1%',
+				margin_right: '1%',
+				margin_bottom : '0%',
+				margin_top : '0%'}),
+			new Canvas({width : .23,
+				height : 1,
+				margin_left: '1%',
+				margin_right: '1%',
+				margin_bottom : '0%',
+				margin_top : '0%'}),
+			new Canvas({width : .23,
+				height : 1,
+				margin_left: '1%',
+				margin_right: '1%',
+				margin_bottom : '0%',
+				margin_top : '0%'})
 			]
 		});
 	}
