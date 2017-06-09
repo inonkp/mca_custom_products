@@ -1,7 +1,9 @@
 import {Canvas} from './canvas';
 
 export interface CanvasSet{
-	canvases : Canvas[]
+	canvases : Canvas[],
+	height: number,
+	width: number
 }
 export class CanvasDB{
 	
@@ -15,31 +17,33 @@ export class CanvasDB{
 	public static init(){
 		CanvasDB.canvas_options = [];
 		CanvasDB.canvas_options.push({
+		width: 1000,
+		height: 700,
 		canvases : [
-			new Canvas({width : .23,
+			new Canvas({width : .24,
+				height : .5,
+				margin_left: '0.5%',
+				margin_right: '0.5%',
+				margin_bottom : .25,
+				margin_top : .25}),
+			new Canvas({width : .24,
 				height : 1,
-				margin_left: '1%',
-				margin_right: '1%',
-				margin_bottom : '0%',
-				margin_top : '0%'}),
-			new Canvas({width : .23,
+				margin_left: '0.5%',
+				margin_right: '0.5%',
+				margin_bottom : 0,
+				margin_top : 0}),
+			new Canvas({width : .24,
 				height : 1,
-				margin_left: '1%',
-				margin_right: '1%',
-				margin_bottom : '0%',
-				margin_top : '0%'}),
-			new Canvas({width : .23,
+				margin_left: '0.5%',
+				margin_right: '0.5%',
+				margin_bottom : 0,
+				margin_top : 0}),
+			new Canvas({width : .24,
 				height : 1,
-				margin_left: '1%',
-				margin_right: '1%',
-				margin_bottom : '0%',
-				margin_top : '0%'}),
-			new Canvas({width : .23,
-				height : 1,
-				margin_left: '1%',
-				margin_right: '1%',
-				margin_bottom : '0%',
-				margin_top : '0%'})
+				margin_left: '0.5%',
+				margin_right: '0.5%',
+				margin_bottom : 0,
+				margin_top : 0})
 			]
 		});
 	}

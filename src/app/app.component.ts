@@ -13,11 +13,8 @@ import {CanvasSet} from './canvas_db';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  encapsulation: ViewEncapsulation.None,
   styles: [`
-	  body, html {
-	  height: 100%;
-	}
+
     .canvas{
       -webkit-transform: translate3d(0, 0, 0);
       -moz-transform: translate3d(0, 0, 0);
@@ -37,6 +34,7 @@ import {CanvasSet} from './canvas_db';
 	.canvases_container{
 		border: 1px solid black;
 		display: inline-block;
+		position: fixed;
 		
 	}
   `]
@@ -66,25 +64,20 @@ export class AppComponent {
   }
   
 	updateCanvases(){
-		//let totalWidth = 0;
-		//let img_width = this.img.width*this.scale;
-		//let img_height = this.img.height*this.scale;
-		let drag = AppComponent.draggingFactor*this.scale;
-		
-		//this.imgHeightOnCanvas = Math.max(canvas.height,this.img.height);
-		//let imgWidthOnCanvas =  this.img.width/(this.scale);
-
-		
-		
+		let totalWidth = 0;
+		let drag = AppComponent.draggingFactor*this.scale;		
 		for(var i = 0 ; i<this.curr_canvas_set.canvases.length ; i++){
-			let canvas = this.curr_canvas_set.canvases[i];	
-			let width = this.curr_canvas_set.canvases[i].real_time_width;
-
-			let height = this.curr_canvas_set.canvases[i].real_time_height;
+			
+			let canvas = this.canvases[i];	
+			let width = this.canvases[i].width;
+			
+			let height = this.canvases[i].height;
 			let imgHeightOnCanvas = Math.max(height,this.img.height);			
 			this.contexts[i].clearRect(0,0,width,height);	
-			this.contexts[i].drawImage(this.img, width*this.scale*i - this.imgX*drag,0 , width*this.scale, imgHeightOnCanvas,     // source rectangle
+			this.contexts[i].drawImage(this.img, totalWidth*this.scale - this.imgX*drag,this.curr_canvas_set.canvases[i].margin_bottom*this.curr_canvas_set.height*this.scale , width*this.scale, imgHeightOnCanvas,     // source rectangle
                    0, this.imgY, width, imgHeightOnCanvas/this.scale);
+			totalWidth = totalWidth+ width;
+			
 		}
 		
 	}
@@ -148,18 +141,7 @@ export class AppComponent {
    ngAfterViewInit(){
 		this.initElements();
 		this.initMouseEvents();
-		Observable.fromEvent(window, 'resize')
-        .subscribe(_ => {
-         let container = <HTMLElement>document.getElementById("my_canvases_container");
 		
-			for (let i =0; i<this.curr_canvas_set.canvases.length;i++){
-				
-
-				this.curr_canvas_set.canvases[i].real_time_width = this.curr_canvas_set.canvases[i].width*container.clientWidth;
-				this.curr_canvas_set.canvases[i].real_time_height = this.curr_canvas_set.canvases[i].height*container.clientHeight;
-			}
-			this.updateCanvases();
-        })
    }
 	
 	initElements(){
@@ -171,13 +153,11 @@ export class AppComponent {
 			
 			let canvas = <HTMLCanvasElement>document.getElementById("canvas"+i);
 			this.canvases.push(canvas);
-			this.curr_canvas_set.canvases[i].real_time_width = this.curr_canvas_set.canvases[i].width*container.clientWidth;
-			this.curr_canvas_set.canvases[i].real_time_height = this.curr_canvas_set.canvases[i].height*container.clientHeight;
 			this.contexts.push(canvas.getContext("2d"));
 			//this.draggable.style.position = 'relative';
 			canvas.style.cursor = 'pointer';
 		}
-		this.cdr.detectChanges();
+		
 	}
   ngOnInit() {
 
