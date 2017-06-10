@@ -8,8 +8,8 @@ export class Canvas {
 	height : number;
 	margin_bottom : number;
 	margin_top : number;
-	margin_left : number;
-	margin_right : number;
+	margin_left : string;
+	margin_right : string;
 	constructor(json) {
 		this.width = json.width;
 		this.height = json.height;
