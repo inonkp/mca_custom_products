@@ -1,8 +1,9 @@
 
 <div class="canvases_container" id="my_canvases_container" [style.height.px]="getContainerHeight()" [style.width.px]="getContainerWidth()">
-	<canvas *ngFor="let canvas of getCurrCanvasSet();let i=index" class="canvas" [id]="'canvas'+i" [width]="canvas.width*getContainerWidth()" [height]="canvas.height*getContainerHeight()" 
+	<canvas  #canvasSet *ngFor="let canvas of getCurrCanvasSet();let i=index" class="canvas" [id]="'canvas'+i" [width]="canvas.width*getContainerWidth()" [height]="canvas.height*getContainerHeight()" 
 		[style.margin-top.px]="canvas.margin_top*getContainerHeight()" [style.margin-bottom.px]="canvas.margin_bottom*getContainerHeight()" [style.margin-left]="canvas.margin_left" [style.margin-right]="canvas.margin_right"></canvas>
 </div>
 <div id="thumbnail_container">
 	<button *ngFor="let thumbnail of thumbnails;let i = index" (invoke)="testFunc()" class="canvas_set_button" [style.background-image]="'url('+thumbnail.url+')'" (click)="changeCanvasSet(thumbnail.name)"></button>
 </div>
+<input type="file" id="file-input" style="margin-top:5px"/>

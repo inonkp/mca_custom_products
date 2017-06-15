@@ -1,4 +1,4 @@
-import { ChangeDetectorRef ,ViewEncapsulation,Component, Directive, EventEmitter, HostListener,Output } from '@angular/core';
+import { ChangeDetectorRef ,ViewEncapsulation,Component,QueryList, ViewChildren} from '@angular/core';
 import {ElementRef} from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
@@ -6,7 +6,7 @@ import 'rxjs/add/observable/fromEvent';
 import 'rxjs/add/operator/map';
 import "rxjs/add/operator/mergeMap";
 import "rxjs/add/operator/takeUntil";
-import * as $ from 'jquery';
+import * as loadImageLib from '../scripts/load-image';
 import {CanvasDB} from './canvas_db';
 import {CanvasSet,Thumbnail} from './canvas_db';
 
@@ -74,7 +74,7 @@ export class AppComponent  {
 	scale;
 	thumbnails : Thumbnail[];
 	curr_canvas_set: CanvasSet;
-
+	@ViewChildren('canvasSet') things: QueryList<any>;
 
 	constructor(public element: ElementRef,private cdr: ChangeDetectorRef) {
 		this.canvases = [];
@@ -164,16 +164,34 @@ export class AppComponent  {
    }
    
    ngAfterViewInit(){
-		this.initElements();
-		this.initMouseEvents();
-		console.log("ngAfterViewInit");
+		this.initAll();
+		this.things.changes.subscribe(e => {
+			this.initAll();
+			this.updateCanvases();
+		});
+		document.getElementById('file-input').onchange = (e:any) => {
+			loadImageLib(
+				e.target.files[0],
+				(image:any) =>{
+					this.switchImage(image);
+				},
+				{} // Options 
+			);
+		};
+		//console.log("ngAfterViewInit");
 		
    }
    
-    testFunc(){
-		console.log("testFunc");
+    initAll(){
+		this.initElements();
+		this.initMouseEvents();
 
 		
+   }
+   
+   switchImage(image: any){
+		this.img = image;
+		this.updateCanvases();
    }
 
 	initElements(){
@@ -184,7 +202,7 @@ export class AppComponent  {
 		for (let i =0; i<this.curr_canvas_set.canvases.length;i++){
 			
 			let canvas = <HTMLCanvasElement>document.getElementById("canvas"+i);
-			console.log(canvas);
+			
 			this.canvases.push(canvas);
 			this.contexts.push(canvas.getContext("2d"));
 			//this.draggable.style.position = 'relative';
