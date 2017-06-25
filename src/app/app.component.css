@@ -1,0 +1,40 @@
+.canvas{
+	-webkit-transform: translate3d(0, 0, 0);
+	-moz-transform: translate3d(0, 0, 0);
+	-ms-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
+	//background-image: url(https://cdn.rawgit.com/Reactive-Extensions/rx.angular.js/master/examples/draganddrop/logo.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+	//position: absolute;
+	//margin-right: 7px;
+	//margin-left: 7px;
+	color: #000000;
+	-moz-box-shadow: 0 0 5px #999;
+	-webkit-box-shadow: 0 0 5px #999;
+	box-shadow: 0 0 5px #999;
+
+
+    }
+.canvases_container{
+	border: 1px solid black;
+	display: inline-block;
+	position: relative;
+	
+}
+.canvas_set_button {
+
+	height: 60px;
+	width: 80px;
+	background-size: 50px 40px;
+	background-repeat: no-repeat;
+	background-position: center;
+
+}
+
+#thumbnail_container{
+	position: relative;
+}
+
+
