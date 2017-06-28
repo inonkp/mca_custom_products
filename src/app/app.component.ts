@@ -23,6 +23,9 @@ import { NouisliderComponent } from 'ng2-nouislider';
 export class AppComponent  {
 	
 	static draggingFactor = 1.3;
+	maxZoom = 1.7;
+	minZoom = 0.05;
+	zoomInProgress = false;
 	mousedrag;
 	mouseup;
 	mousemove;
@@ -35,7 +38,7 @@ export class AppComponent  {
 	imgY;
 	scale;
 	thumbnails : Thumbnail[];
-	zoomBarRange = [0.1];
+	zoomBarValue = 1;
 	curr_canvas_set: CanvasSet;
 	@ViewChildren('canvasSet') things: QueryList<any>;
 	
@@ -116,11 +119,19 @@ export class AppComponent  {
 	
 	this.scroll.subscribe(e => {
 		e.preventDefault();
+		if(this.zoomInProgress) return;
 		
 		if(e.deltaY>0){
-		 this.scale += .01;
+			if(this.scale<this.maxZoom){
+				this.scale += .01;
+				this.zoomBarValue+=0.01;
+			}
 		}else{
-		 this.scale -= .01;
+			if(this.scale>this.minZoom){
+				this.scale -= .01;
+				this.zoomBarValue-=0.01;
+			}
+
 		}
 
 		this.updateCanvases();
@@ -173,6 +184,20 @@ export class AppComponent  {
 			canvas.style.cursor = 'pointer';
 		}
 		
+	}
+	
+	onZoomStart(){
+		this.zoomInProgress = true;
+	}
+	
+	onZoomEnd(){
+		this.zoomInProgress = false
+	}
+	
+	onZoomBarSlide(e){
+		
+		this.scale = e;
+		this.updateCanvases();
 	}
   ngOnInit() {
 		
