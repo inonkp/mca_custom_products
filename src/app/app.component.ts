@@ -8,8 +8,11 @@ import "rxjs/add/operator/mergeMap";
 import "rxjs/add/operator/takeUntil";
 import * as loadImageLib from '../scripts/load-image';
 import {CanvasDB} from './canvas_db';
-import {CanvasSet,Thumbnail} from './canvas_db';
+import {Thumbnail} from './canvas_db';
+import {CanvasSet} from './canvas_set';
 import { NouisliderComponent } from 'ng2-nouislider';
+import canvasToImage from 'canvas-to-image';
+
 
 
 @Component({
@@ -78,7 +81,8 @@ export class AppComponent  {
   imageReady() {
   		this.imgX = 0;
 		this.imgY = 0;
-		
+		this.img.crossOrigin = 'Anonymous';
+		console.log(this.img);
 		this.updateCanvases();
 
 		
@@ -211,8 +215,8 @@ export class AppComponent  {
 		//this.img.src = "https://www.noao.edu/image_gallery/images/d2/NGC1365-500.jpg"; //500 * 5000
 		//this.img.src = "http://www.crimsy.com/images/100x100.PNG"; //100 * 100
 		//this.img.src = "http://www.shximai.com/data/out/96/68284658-high-resolution-wallpapers.jpg"; //100 * 100
-		//this.img.src = "https://upload.wikimedia.org/wikipedia/commons/f/f3/Mono_Crater_closeup-1000px.jpeg"; // 500 x 1000
-		this.img.src = "http://photos.toofab.com/gallery-images/2016/04/GettyImages-518772280_master_src.jpg"; // 500 x 1000
+		this.img.src = "https://upload.wikimedia.org/wikipedia/commons/f/f3/Mono_Crater_closeup-1000px.jpeg"; // 500 x 1000
+		//this.img.src = "http://photos.toofab.com/gallery-images/2016/04/GettyImages-518772280_master_src.jpg"; // 500 x 1000
 		//this.img.src = "http://stormwater.sustainablewestseattle.org/files/2011/09/water-1000x200.jpg"; // 200 x 1000
 		this.img.onload = (() => this.imageReady());
 		
@@ -235,5 +239,24 @@ export class AppComponent  {
   
   getContainerHeight(){
 	return Math.min(this.curr_canvas_set.height,screen.height*0.6);
+  }
+  
+  renderCanvases(){
+	var canvas = document.createElement('canvas');
+	canvas.id = 'blah';
+	canvas.style.marginTop = "20px";
+	canvas.width = this.getContainerWidth();
+	canvas.height = this.getContainerHeight();
+	let context = canvas.getContext('2d');
+	for(var i = 0 ; i<this.curr_canvas_set.canvases.length ; i++){
+		let positonX = this.curr_canvas_set.canvases[i].rPositionX*this.getContainerWidth();
+		let positonY = this.curr_canvas_set.canvases[i].rPositionY*this.getContainerHeight();
+		context.drawImage(this.canvases[i],positonX,positonY);
+	}
+	var profile = new Image();
+	//profile.setAttribute('crossOrigin', 'anonymous');
+	profile.src = this.canvases[0].toDataURL();
+	
+	
   }
 }

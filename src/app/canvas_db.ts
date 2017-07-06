@@ -2,12 +2,8 @@ import {Canvas} from './canvas';
 import {Diamond} from './diamond';
 import {FourTuple} from './four_tuple';
 import {ThreeTuple} from './three_tuple';
+import {CanvasSet} from './canvas_set';
 
-export interface CanvasSet{
-	canvases : Canvas[],
-	height: number,
-	width: number
-}
 
 export interface Thumbnail{
 	url: string;
