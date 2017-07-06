@@ -24,7 +24,7 @@ export class AppComponent  {
 	
 	static draggingFactor = 1.3;
 	maxZoom = 1.7;
-	minZoom = 0.05;
+	minZoom = 0.3;
 	zoomInProgress = false;
 	mousedrag;
 	mouseup;
@@ -52,22 +52,23 @@ export class AppComponent  {
   
 	updateCanvases(){
 		let totalWidth = 0;
-		let drag = AppComponent.draggingFactor*this.scale;		
+		let drag = AppComponent.draggingFactor;	
+		let locationX = 0; 		
 		for(var i = 0 ; i<this.curr_canvas_set.canvases.length ; i++){
 			
 			let canvas = this.canvases[i];	
 			let width = this.canvases[i].width;
 			
 			let height = this.canvases[i].height;
-			
-			let imgHeightOnCanvas = Math.max(height,this.img.height);			
+				
 			this.contexts[i].clearRect(0,0,width,height);
-			//this.contexts[i].globalAlpha = 0.5;			
-			//this.contexts[i].fillStyle = "grey";
+
+
+			this.contexts[i].drawImage(this.img,0 ,0 ,this.img.width, this.img.height,     // source rectangle
+                   -totalWidth + this.imgX*drag , this.imgY*drag - this.curr_canvas_set.canvases[i].margin_top*this.getContainerHeight(), 
+						this.img.width*this.scale, this.img.height*this.scale);
+	
 			
-			//this.contexts[i].fillRect(0, 0, width,height);
-			this.contexts[i].drawImage(this.img, totalWidth*this.scale - this.imgX*drag,this.curr_canvas_set.canvases[i].margin_top*this.getContainerHeight()*this.scale -this.imgY*drag , width*this.scale, imgHeightOnCanvas*this.scale,     // source rectangle
-                   0, 0, width, imgHeightOnCanvas);
 			totalWidth = totalWidth+ width;
 			
 		}
@@ -210,8 +211,8 @@ export class AppComponent  {
 		//this.img.src = "https://www.noao.edu/image_gallery/images/d2/NGC1365-500.jpg"; //500 * 5000
 		//this.img.src = "http://www.crimsy.com/images/100x100.PNG"; //100 * 100
 		//this.img.src = "http://www.shximai.com/data/out/96/68284658-high-resolution-wallpapers.jpg"; //100 * 100
-		this.img.src = "https://upload.wikimedia.org/wikipedia/commons/f/f3/Mono_Crater_closeup-1000px.jpeg"; // 500 x 1000
-		//this.img.src = "http://photos.toofab.com/gallery-images/2016/04/GettyImages-518772280_master_src.jpg"; // 500 x 1000
+		//this.img.src = "https://upload.wikimedia.org/wikipedia/commons/f/f3/Mono_Crater_closeup-1000px.jpeg"; // 500 x 1000
+		this.img.src = "http://photos.toofab.com/gallery-images/2016/04/GettyImages-518772280_master_src.jpg"; // 500 x 1000
 		//this.img.src = "http://stormwater.sustainablewestseattle.org/files/2011/09/water-1000x200.jpg"; // 200 x 1000
 		this.img.onload = (() => this.imageReady());
 		
