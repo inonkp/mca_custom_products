@@ -29,7 +29,7 @@ export class ThreeTuple extends CanvasSet{
 			new Canvas({width : .33,
 				height : .7,
 				margin_left: 0.005,
-				margin_right: 0.005,
+				margin_right: 0,
 				margin_bottom : .15,
 				margin_top : .15,
 				toLeftOf : '1',

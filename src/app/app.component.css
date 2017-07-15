@@ -18,9 +18,10 @@
 
     }
 .canvases_container{
-	border: 1px solid black;
+	border: 0px solid black;
 	display: inline-block;
 	position: relative;
+	
 	
 }
 .canvas_set_button {
@@ -36,5 +37,6 @@
 #thumbnail_container{
 	position: relative;
 }
+
 
 

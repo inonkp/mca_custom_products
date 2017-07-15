@@ -2,6 +2,7 @@ import {Canvas} from './canvas';
 import {Diamond} from './diamond';
 import {FourTuple} from './four_tuple';
 import {ThreeTuple} from './three_tuple';
+import {EmptyCanvasSet} from './empty_canvas_set';
 import {CanvasSet} from './canvas_set';
 
 
@@ -26,6 +27,7 @@ export class CanvasDB{
 		CanvasDB.canvas_options.set('diamond',new Diamond());
 		CanvasDB.canvas_options.set('four_tuple',new FourTuple());
 		CanvasDB.canvas_options.set('three_tuple',new ThreeTuple());
+		CanvasDB.canvas_options.set('empty_canvas_set',new EmptyCanvasSet());
 		CanvasDB.thumbnails.push({url:'assets/images/diamond.png',name:'diamond'});
 		CanvasDB.thumbnails.push({url:'assets/images/four_tuple.png',name:'four_tuple'});
 		CanvasDB.thumbnails.push({url:'assets/images/three_tuple.png',name:'three_tuple'});
@@ -33,5 +35,9 @@ export class CanvasDB{
 	
 	public static get_canvas_set(name : string){
 		return CanvasDB.canvas_options.get(name);
+	}
+	
+	public static new_canvas_set(){
+		return new ThreeTuple();
 	}
 }

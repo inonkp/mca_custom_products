@@ -39,7 +39,7 @@ export class FourTuple extends CanvasSet{
 			new Canvas({width : .24,
 				height : .5,
 				margin_left: 0.005,
-				margin_right: 0.005,
+				margin_right: 0,
 				margin_bottom : 0.25,
 				margin_top : 0.25,
 				toLeftOf : '2',

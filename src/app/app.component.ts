@@ -1,4 +1,4 @@
-import { ChangeDetectorRef ,ViewEncapsulation,Component,QueryList, ViewChildren} from '@angular/core';
+import { ChangeDetectorRef ,ViewEncapsulation,Component,QueryList, ViewChildren,ViewChild} from '@angular/core';
 import {ElementRef} from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
@@ -44,16 +44,22 @@ export class AppComponent  {
 	zoomBarValue = 1;
 	curr_canvas_set: CanvasSet;
 	@ViewChildren('canvasSet') things: QueryList<any>;
+	@ViewChild('mainContainer') containerView: ElementRef;
+    containerWidth: number;
+    containerHeight: number;
+	windowScale : number;
 	
 
 	constructor(public element: ElementRef,private cdr: ChangeDetectorRef) {
 		this.canvases = [];
 		this.contexts = [];
 		this.scale = 1;
+		this.windowScale = 1;
 
   }
   
 	updateCanvases(){
+		
 		let totalWidth = 0;
 		let drag = AppComponent.draggingFactor;	
 		let locationX = 0; 		
@@ -65,11 +71,11 @@ export class AppComponent  {
 			let height = this.canvases[i].height;
 				
 			this.contexts[i].clearRect(0,0,width,height);
-
+			
 
 			this.contexts[i].drawImage(this.img,0 ,0 ,this.img.width, this.img.height,     // source rectangle
                    -totalWidth + this.imgX*drag , this.imgY*drag - this.curr_canvas_set.canvases[i].margin_top*this.getContainerHeight(), 
-						this.img.width*this.scale, this.img.height*this.scale);
+						this.img.width*this.scale*this.windowScale, this.img.height*this.scale*this.windowScale);
 	
 			
 			totalWidth = totalWidth+ width;
@@ -81,8 +87,7 @@ export class AppComponent  {
   imageReady() {
   		this.imgX = 0;
 		this.imgY = 0;
-		this.img.crossOrigin = 'Anonymous';
-		console.log(this.img);
+		
 		this.updateCanvases();
 
 		
@@ -115,6 +120,7 @@ export class AppComponent  {
         // Update position
 		this.imgX = pos.left;
 		this.imgY = pos.top;
+		
 		this.updateCanvases();
         
 		//this.ctx.drawImage(this.img, pos.left,pos.top);
@@ -143,12 +149,24 @@ export class AppComponent  {
 	});
    }
    
+   
+   
    ngAfterViewInit(){
 		this.initAll();
 		this.things.changes.subscribe(e => {
+			console.log("things");
 			this.initAll();
+			
 			this.updateCanvases();
 		});
+		
+		 setTimeout(() => { 
+						this.curr_canvas_set = CanvasDB.get_canvas_set('three_tuple');
+						this.updateContainerSizes();
+						this.updateScale();
+						}, 500);
+		
+		
 		document.getElementById('file-input').onchange = (e:any) => {
 			loadImageLib(
 				e.target.files[0],
@@ -160,12 +178,17 @@ export class AppComponent  {
 		};
 		//console.log("ngAfterViewInit");
 		
+		
+   }
+   
+   ngAfterViewChecked(){
+		
    }
    
     initAll(){
 		this.initElements();
 		this.initMouseEvents();
-
+		
 		
    }
    
@@ -182,7 +205,8 @@ export class AppComponent  {
 		for (let i =0; i<this.curr_canvas_set.canvases.length;i++){
 			
 			let canvas = <HTMLCanvasElement>document.getElementById("canvas"+i);
-			
+			//canvas.width = this.getContainerWidth();
+			//canvas.height = 100;
 			this.canvases.push(canvas);
 			this.contexts.push(canvas.getContext("2d"));
 			//this.draggable.style.position = 'relative';
@@ -205,11 +229,14 @@ export class AppComponent  {
 		this.updateCanvases();
 	}
   ngOnInit() {
-		
+		this.containerWidth=0;
+		this.containerHeight=0;
+
 		this.img = new Image();
+		this.img.setAttribute('crossOrigin', 'Anonymous');
 		CanvasDB.init();
 		this.thumbnails = CanvasDB.thumbnails;
-		this.curr_canvas_set = CanvasDB.get_canvas_set('three_tuple');
+		this.curr_canvas_set = CanvasDB.get_canvas_set('empty_canvas_set');
 		//console.log(this.curr_canvas_set);
 		//this.img.src = "https://cdn.shopify.com/s/files/1/0072/7502/products/2016-4-12_2.jpg?v=1493764875"; // 1000 x 1000
 		//this.img.src = "https://www.noao.edu/image_gallery/images/d2/NGC1365-500.jpg"; //500 * 5000
@@ -234,29 +261,100 @@ export class AppComponent  {
   }
   
   getContainerWidth(){
-	return Math.min(this.curr_canvas_set.width,screen.width*0.6);
+	return this.containerWidth;
+	//return document.getElementById("my_canvases_container").offsetWidth;
+	//return Math.min(this.curr_canvas_set.width,screen.width*0.6);
+	//console.log(window.innerWidth);
+	//console.log(screen.availWidth);
+	//return screen.width*0.6;
+
+  }
+  
+  getContainerMinWidth(){
+	return screen.width*0.55;
+  }
+  
+  getContainerMinHeight(){
+	return document.getElementById("my_canvases_container").offsetWidth * (this.curr_canvas_set.height/this.curr_canvas_set.width);
+	//return screen.height*0.65;
   }
   
   getContainerHeight(){
-	return Math.min(this.curr_canvas_set.height,screen.height*0.6);
+	return this.containerHeight;
+	//return document.getElementById("my_canvases_container").offsetWidth * (this.curr_canvas_set.height/this.curr_canvas_set.width);
+	//return Math.min(this.curr_canvas_set.height,screen.height*0.6);
+	//return screen.width*0.6;
+	
+
+  }
+  
+  updateContainerSizes(){
+	this.containerWidth = document.getElementById("my_canvases_container").offsetWidth;
+	this.containerHeight = document.getElementById("my_canvases_container").offsetWidth * (this.curr_canvas_set.height/this.curr_canvas_set.width);
+  }
+  
+  updateScale(){
+	//console.log(this.getContainerHeight());
+	this.windowScale = ( this.getContainerHeight() / this.img.height);
+	
+  }
+  
+  onResize(event){
+	
+	let xRatio = this.imgX/this.getContainerWidth();
+	let yRatio = this.imgY/this.getContainerHeight();
+	this.updateContainerSizes();
+	this.updateScale();
+	this.imgX = xRatio*this.getContainerWidth();
+	this.imgY = yRatio*this.getContainerHeight();
+	
+	setTimeout(() => { 
+						this.updateCanvases();
+						}, 0);
+	
   }
   
   renderCanvases(){
+	var transition_canvases = [];
+	let totalWidth = 0;
+	let drag = AppComponent.draggingFactor;	
+	for(var i = 0 ; i<this.curr_canvas_set.canvases.length ; i++){
+		let transition_canvas = document.createElement('canvas');
+		transition_canvas.width = this.curr_canvas_set.canvases[i].width * this.curr_canvas_set.width;
+		transition_canvas.height = this.curr_canvas_set.canvases[i].height * this.curr_canvas_set.height;
+		let xRatio = this.imgX/this.getContainerWidth();
+		let yRatio = this.imgY/this.getContainerHeight();
+		let x = xRatio*this.curr_canvas_set.width;
+		let y = yRatio*this.curr_canvas_set.height;
+		let wScale = ( this.curr_canvas_set.height / this.img.height);
+		let ctx = transition_canvas.getContext("2d");
+		ctx.drawImage(this.img,0 ,0 ,this.img.width, this.img.height,     // source rectangle
+                   -totalWidth + x*drag , y*drag - this.curr_canvas_set.canvases[i].margin_top*this.curr_canvas_set.height, 
+						this.img.width*this.scale*wScale, this.img.height*this.scale*wScale);
+		transition_canvases[i] = transition_canvas;
+		totalWidth = totalWidth+ transition_canvas.width;
+	}
+	
+	
 	var canvas = document.createElement('canvas');
-	canvas.id = 'blah';
-	canvas.style.marginTop = "20px";
-	canvas.width = this.getContainerWidth();
-	canvas.height = this.getContainerHeight();
+	canvas.width = this.curr_canvas_set.width;
+	canvas.height = this.curr_canvas_set.height;
 	let context = canvas.getContext('2d');
 	for(var i = 0 ; i<this.curr_canvas_set.canvases.length ; i++){
-		let positonX = this.curr_canvas_set.canvases[i].rPositionX*this.getContainerWidth();
-		let positonY = this.curr_canvas_set.canvases[i].rPositionY*this.getContainerHeight();
-		context.drawImage(this.canvases[i],positonX,positonY);
+		let positonX = this.curr_canvas_set.canvases[i].rPositionX*this.curr_canvas_set.width;
+		let positonY = this.curr_canvas_set.canvases[i].rPositionY*this.curr_canvas_set.height;
+		let width = transition_canvases[i].width;
+		let height = transition_canvases[i].height;
+		
+		context.drawImage(transition_canvases[i],0,0,transition_canvases[i].width,transition_canvases[i].height,positonX,positonY,width,height);
 	}
-	var profile = new Image();
-	//profile.setAttribute('crossOrigin', 'anonymous');
-	profile.src = this.canvases[0].toDataURL();
 	
-	
+	//var url= canvas.toDataURL("image/jpeg");
+	//window.open(url);
+	var link = document.createElement("a");
+    link.download = "a";
+    link.href = canvas.toDataURL("image/jpeg");
+	document.body.appendChild(link);
+    link.click();
   }
 }

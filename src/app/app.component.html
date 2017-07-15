@@ -1,5 +1,5 @@
 
-<div class="canvases_container" id="my_canvases_container" [style.height.px]="getContainerHeight()" [style.width.px]="getContainerWidth()">
+<div class="canvases_container" id="my_canvases_container"  (window:resize)="onResize($event)" [style.height.px]="getContainerHeight()" style="width:80%;"  >
 	<canvas  #canvasSet *ngFor="let canvas of getCurrCanvasSet();let i=index" class="canvas" [id]="'canvas'+i" [width]="canvas.width*getContainerWidth()" [height]="canvas.height*getContainerHeight()" 
 		[style.margin-top.px]="canvas.margin_top*getContainerHeight()" [style.margin-bottom.px]="canvas.margin_bottom*getContainerHeight()" [style.margin-left.px]="canvas.margin_left*getContainerWidth()" [style.margin-right.px]="canvas.margin_right*getContainerWidth()"></canvas>
 </div>

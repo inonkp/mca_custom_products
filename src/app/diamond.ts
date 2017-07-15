@@ -46,7 +46,7 @@ export class Diamond extends CanvasSet{
 			new Canvas({width : .19,
 				height : .4,
 				margin_left: 0.005,
-				margin_right: 0.005,
+				margin_right: 0,
 				margin_bottom : 0.3,
 				margin_top : 0.3,
 				toLeftOf : '3',
