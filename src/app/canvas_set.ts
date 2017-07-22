@@ -5,11 +5,13 @@ export class CanvasSet{
 	canvases : Canvas[];
 	height: number;
 	width: number;
+	name: string;
 	
-	constructor(height : number, width: number, canvases: Canvas[]){
+	constructor(height : number, width: number, canvases: Canvas[], name: string){
 		this.height = height;
 		this.width = width;
 		this.canvases = canvases;
+		this.name = name;
 		this.computePositions();
 	}
 	

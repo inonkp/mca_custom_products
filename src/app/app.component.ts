@@ -13,6 +13,13 @@ import {CanvasSet} from './canvas_set';
 import { NouisliderComponent } from 'ng2-nouislider';
 import canvasToImage from 'canvas-to-image';
 
+declare function finish(orig_img,canvas,x,y,scale,name);
+declare function initX();
+declare function initY();
+declare function initScale();
+declare function initImg();
+declare function initCanvasSet();
+declare function getImageFromServer(name);
 
 
 @Component({
@@ -21,6 +28,7 @@ import canvasToImage from 'canvas-to-image';
   styleUrls:['./app.component.css','./nouislider.css']
   
 })
+
 
 
 export class AppComponent  {
@@ -85,10 +93,15 @@ export class AppComponent  {
 	}
 
   imageReady() {
-  		this.imgX = 0;
-		this.imgY = 0;
-		
-		this.updateCanvases();
+  		this.imgX = initX();
+		this.imgY =  initY();
+		this.scale = initScale();
+
+		 setTimeout(() => { 
+						this.curr_canvas_set = CanvasDB.get_canvas_set(initCanvasSet());
+						this.updateContainerSizes();
+						this.updateScale();
+						}, 250);
 
 		
    }
@@ -150,21 +163,23 @@ export class AppComponent  {
    }
    
    
-   
+   getAppImg(name: string){
+		return getImageFromServer(name);
+   }
    ngAfterViewInit(){
 		this.initAll();
 		this.things.changes.subscribe(e => {
-			console.log("things");
+			//console.log("things");
 			this.initAll();
 			
 			this.updateCanvases();
 		});
 		
-		 setTimeout(() => { 
-						this.curr_canvas_set = CanvasDB.get_canvas_set('three_tuple');
+		/* setTimeout(() => { 
+						this.curr_canvas_set = CanvasDB.get_canvas_set(initCanvasSet());
 						this.updateContainerSizes();
 						this.updateScale();
-						}, 500);
+						}, 500);*/
 		
 		
 		document.getElementById('file-input').onchange = (e:any) => {
@@ -176,7 +191,8 @@ export class AppComponent  {
 				{} // Options 
 			);
 		};
-		//console.log("ngAfterViewInit");
+		this.img.src = initImg();
+		this.img.onload = (() => this.imageReady());
 		
 		
    }
@@ -242,10 +258,8 @@ export class AppComponent  {
 		//this.img.src = "https://www.noao.edu/image_gallery/images/d2/NGC1365-500.jpg"; //500 * 5000
 		//this.img.src = "http://www.crimsy.com/images/100x100.PNG"; //100 * 100
 		//this.img.src = "http://www.shximai.com/data/out/96/68284658-high-resolution-wallpapers.jpg"; //100 * 100
-		this.img.src = "https://upload.wikimedia.org/wikipedia/commons/f/f3/Mono_Crater_closeup-1000px.jpeg"; // 500 x 1000
-		//this.img.src = "http://photos.toofab.com/gallery-images/2016/04/GettyImages-518772280_master_src.jpg"; // 500 x 1000
-		//this.img.src = "http://stormwater.sustainablewestseattle.org/files/2011/09/water-1000x200.jpg"; // 200 x 1000
-		this.img.onload = (() => this.imageReady());
+		//console.log('va');
+		
 		
   }
   
@@ -349,12 +363,20 @@ export class AppComponent  {
 		context.drawImage(transition_canvases[i],0,0,transition_canvases[i].width,transition_canvases[i].height,positonX,positonY,width,height);
 	}
 	
+	let orig_img_canvas = document.createElement('canvas');
+	orig_img_canvas.width = this.img.width;
+	orig_img_canvas.height = this.img.height;
+	let orig_ctx = orig_img_canvas.getContext('2d');
+	orig_ctx.drawImage(this.img,0,0);
 	//var url= canvas.toDataURL("image/jpeg");
 	//window.open(url);
-	var link = document.createElement("a");
+	/*var link = document.createElement("a");
     link.download = "a";
     link.href = canvas.toDataURL("image/jpeg");
 	document.body.appendChild(link);
-    link.click();
+    link.click();*/
+	let x = this.imgX;
+	
+	finish(orig_img_canvas,canvas,x,this.imgY,this.scale,this.curr_canvas_set.name);
   }
 }

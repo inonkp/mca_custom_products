@@ -6,6 +6,7 @@ export class Diamond extends CanvasSet{
 	constructor(){
 		let width = 1000;
 		let height = 700;
+		let name = 'diamond';
 		let canvases = [
 			new Canvas({width : .19,
 				height : .4,
@@ -54,6 +55,6 @@ export class Diamond extends CanvasSet{
 				id : '4'})
 			];
 			
-		super(height,width,canvases);
+		super(height,width,canvases,name);
 	}
 }

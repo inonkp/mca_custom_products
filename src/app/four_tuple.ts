@@ -6,6 +6,7 @@ export class FourTuple extends CanvasSet{
 	constructor(){
 		let width = 1000;
 		let height = 700;
+		let name = 'four_tuple';
 		let canvases = [
 			new Canvas({width : .24,
 				height : .5,
@@ -47,6 +48,6 @@ export class FourTuple extends CanvasSet{
 				id: '3'})
 			];
 			
-		super(height,width,canvases);
+		super(height,width,canvases,name);
 	}
 }

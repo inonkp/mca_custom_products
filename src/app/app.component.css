@@ -24,8 +24,10 @@
 	
 	
 }
-.canvas_set_button {
 
+
+.canvas_set_button {
+	background-color: darkgray;
 	height: 60px;
 	width: 80px;
 	background-size: 50px 40px;
@@ -36,6 +38,17 @@
 
 #thumbnail_container{
 	position: relative;
+}
+
+input[type="file"] {
+    display: none;
+}
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+	margin-top: 5px;
 }
 
 
