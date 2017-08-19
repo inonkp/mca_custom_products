@@ -20,6 +20,7 @@ declare function initScale();
 declare function initImg();
 declare function initCanvasSet();
 declare function getImageFromServer(name);
+declare function isInEditMode();
 
 
 @Component({
@@ -35,7 +36,7 @@ export class AppComponent  {
 	
 	static draggingFactor = 1.3;
 	maxZoom = 1.7;
-	minZoom = 0.3;
+	minZoom = 0.2;
 	zoomInProgress = false;
 	mousedrag;
 	mouseup;
@@ -56,6 +57,9 @@ export class AppComponent  {
     containerWidth: number;
     containerHeight: number;
 	windowScale : number;
+	fileInputValidator: boolean;
+	initialImage : boolean;
+	imgFile;
 	
 
 	constructor(public element: ElementRef,private cdr: ChangeDetectorRef) {
@@ -63,6 +67,8 @@ export class AppComponent  {
 		this.contexts = [];
 		this.scale = 1;
 		this.windowScale = 1;
+		this.fileInputValidator = true;
+		this.initialImage = !isInEditMode();
 
   }
   
@@ -89,7 +95,6 @@ export class AppComponent  {
 			totalWidth = totalWidth+ width;
 			
 		}
-		
 	}
 
   imageReady() {
@@ -183,6 +188,16 @@ export class AppComponent  {
 		
 		
 		document.getElementById('file-input').onchange = (e:any) => {
+			if (!e.target.files[0].name.match(/.(jpg|jpeg|png|gif)$/i)){
+				
+				this.fileInputValidator = false;
+				
+				
+				return;
+			}
+			this.fileInputValidator = true;
+			this.initialImage=false;
+			this.imgFile = e.target.files[0];
 			loadImageLib(
 				e.target.files[0],
 				(image:any) =>{
@@ -210,6 +225,7 @@ export class AppComponent  {
    
    switchImage(image: any){
 		this.img = image;
+		this.updateScale();
 		this.updateCanvases();
    }
 
@@ -329,6 +345,11 @@ export class AppComponent  {
   }
   
   renderCanvases(){
+	if(this.initialImage){
+		this.fileInputValidator = false;
+		return;
+	}
+			
 	var transition_canvases = [];
 	let totalWidth = 0;
 	let drag = AppComponent.draggingFactor;	
@@ -377,6 +398,6 @@ export class AppComponent  {
     link.click();*/
 	let x = this.imgX;
 	
-	finish(orig_img_canvas,canvas,x,this.imgY,this.scale,this.curr_canvas_set.name);
+	finish(this.imgFile,canvas,x,this.imgY,this.scale,this.curr_canvas_set.name);
   }
 }

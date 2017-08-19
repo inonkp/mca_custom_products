@@ -15,5 +15,6 @@
 	<input id="file-input" type="file"/>
     <i class="fa fa-cloud-upload"></i> Choose Image
 </label>
+<label *ngIf="!fileInputValidator" for="file-input" style="color:red;">Must use valid image file</label>
 <br>
 <button (click)="renderCanvases()" style="margin-top:5px; float: right;">Save and Continue</button>
